@@ -1,0 +1,62 @@
+{
+  "name": "my-game",
+  "version": "3.3.2",
+  "description": "",
+  "main": "dist/server.js",
+  "types": "index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --check --ignore-path ./.eslintignore '**'",
+    "prettier:fix": "prettier --write --ignore-path ./.eslintignore '**'",
+    "test": "NODE_ENV=test jest",
+    "build": "rimraf dist && rpgjs build",
+    "dev": "rpgjs dev",
+    "start": "node dist/server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": "<15"
+  },
+  "dependencies": {
+    "@rpgjs/client": "^3.3.2",
+    "@rpgjs/default-gui": "^3.3.0",
+    "@rpgjs/gamepad": "^3.3.0",
+    "@rpgjs/mobile-gui": "^3.3.0",
+    "@rpgjs/server": "^3.3.2",
+    "@rpgjs/standalone": "^3.3.0",
+    "@rpgjs/testing": "^3.3.0",
+    "@rpgjs/types": "^3.3.0",
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2",
+    "express": "4.17.1",
+    "pretty-error": "^4.0.0",
+    "socket.io": "4.1.2",
+    "socket.io-client": "4.1.2",
+    "userop": "^0.3.1",
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@rpgjs/compiler": "^3.3.0",
+    "@types/jest": "26.0.23",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/compiler-sfc": "3.2.33",
+    "@vue/vue3-jest": "27.0.0-alpha.4",
+    "canvas": "2.8.0",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "jest": "27.0.4",
+    "prettier": "^2.8.8",
+    "rimraf": "3.0.2",
+    "ts-jest": "27.0.2",
+    "typescript": "4.3.2"
+  }
+}

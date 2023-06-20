@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌳</text></svg>"
+    />
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1, user-scalable=no, minimum-scale=1, width=device-width, height=device-height"
+    />
+    <meta property="og:title" content="BranchRPG" />
+    <meta property="og:url" content=https://branch-rpg.stackup.sh/>
+    <meta
+      property="og:description"
+      content="BranchRPG is web3 game demo to showcase smart accounts. See what a web3 game looks like when powered by batched atomic operations and gas-less transactions."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content=https://i.imgur.com/1zN8P56.png>
+  </head>
+
+  <body>
+    <div id="rpg"></div>
+
+    <style>
+      body,
+      html {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        margin: 0;
+        background-color: black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #rpg {
+        position: relative;
+        height: 100%;
+      }
+
+      @media (min-width: 800px) {
+        #rpg {
+          width: 816px;
+        }
+      }
+
+      @media (max-width: 800px) {
+        #rpg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "Branch RPG",
+  "short_name": "Branch",
+  "orientation": "landscape",
+  "description": "Demo web3 game with using ERC-4337",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": [96, 128, 192, 256]
+    }
+  ]
+}
