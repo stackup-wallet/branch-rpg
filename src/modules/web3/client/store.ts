@@ -15,7 +15,7 @@ interface IStore {
 }
 
 interface ITaskData {
-  action: "water" | "garden";
+  action: "water" | "garden" | "execute";
 }
 
 const BranchRPGAddress = "0x20d8aE1faAFc55c8e2f1e86D02a62C79D9A43a73";
@@ -57,6 +57,11 @@ const onTask = (store: IStore) => (data: ITaskData) => {
         ]),
       };
       store.calls = [...store.calls, call];
+      break;
+    }
+
+    case "execute": {
+      store.execute();
       break;
     }
 

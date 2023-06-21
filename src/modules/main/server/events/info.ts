@@ -19,7 +19,7 @@ export class InfoEvent extends RpgEvent {
       talkWith: this,
     });
     await player.showText(
-      "When you're ready, execute your actions through the account menu.",
+      "When you're ready, execute your actions by talking to the scarecrow or through the account menu.",
       {
         talkWith: this,
       }
