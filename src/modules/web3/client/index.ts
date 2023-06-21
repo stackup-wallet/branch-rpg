@@ -20,11 +20,6 @@ const findOrCreateSigner = () => {
     async onConnected(_engine, socket) {
       await store.init(findOrCreateSigner(), socket);
       socket.emit("account", { address: store.address });
-
-      // Listen for execute tasks event
-      socket.on("executeTasks", async () => {
-        await store.execute();
-      });
     },
   },
 })

@@ -6,7 +6,6 @@ import abi from "./abi.json";
 interface IStore {
   loading: boolean;
   score: string;
-  waterBalance: string;
   calls: Array<ICall>;
   address: string;
   signer: string;
@@ -16,11 +15,9 @@ interface IStore {
 }
 
 interface ITaskData {
-  action: "water" | "garden";
+  action: "water" | "garden" | "execute";
 }
 
-
-// Branch RPG contract
 const BranchRPGAddress = "0x20d8aE1faAFc55c8e2f1e86D02a62C79D9A43a73";
 const BranchRPGContract = new ethers.Contract(
   BranchRPGAddress,
@@ -34,7 +31,6 @@ const BranchRPCBurnFilter = BranchRPGContract.filters.Transfer(
 
 const onScore = (store: IStore) => async () => {
   store.score = ethers.utils.formatEther(await BranchRPGContract.score());
-  store.waterBalance = ethers.utils.formatEther(await BranchRPGContract.balanceOf(store.address));
 };
 
 const onTask = (store: IStore) => (data: ITaskData) => {
@@ -64,6 +60,11 @@ const onTask = (store: IStore) => (data: ITaskData) => {
       break;
     }
 
+    case "execute": {
+      store.execute();
+      break;
+    }
+
     default:
       break;
   }
@@ -74,7 +75,6 @@ let client: IClient;
 export const store = reactive<IStore>({
   loading: false,
   score: "0",
-  waterBalance: "0",
   calls: [],
   address: ethers.constants.AddressZero,
   signer: ethers.constants.HashZero,
@@ -104,7 +104,6 @@ export const store = reactive<IStore>({
       this.signer = signer;
 
       BranchRPGContract.on(BranchRPCBurnFilter, onScore(this));
-      
       socket.on("task", onTask(this));
     } catch (error) {
       console.error(error);
