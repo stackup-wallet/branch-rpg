@@ -2,7 +2,6 @@ import { ethers } from "ethers";
 import { Presets, ICall, Client, IClient } from "userop";
 import { reactive } from "vue";
 import abi from "./abi.json";
-import erc20 from "./erc20.json";
 
 interface IStore {
   loading: boolean;
@@ -33,26 +32,9 @@ const BranchRPCBurnFilter = BranchRPGContract.filters.Transfer(
   ethers.constants.AddressZero
 );
 
-// Water Balance
-const WaterTokenABI = erc20;
-const WaterTokenAddress = "0x20d8aE1faAFc55c8e2f1e86D02a62C79D9A43a73";
-const WaterTokenContract = new ethers.Contract(
-  WaterTokenAddress,
-  WaterTokenABI,
-  new ethers.providers.JsonRpcProvider(process.env.NODE_RPC_URL)
-);
-
-// Update the water balance of the current address
-const updateWaterBalance = async (store: IStore) => {
-  if (store.address !== ethers.constants.AddressZero) {
-    const balance = await WaterTokenContract.balanceOf(store.address);
-    store.waterBalance = ethers.utils.formatEther(balance);
-  }
-};
-
-
 const onScore = (store: IStore) => async () => {
   store.score = ethers.utils.formatEther(await BranchRPGContract.score());
+  store.waterBalance = ethers.utils.formatEther(await BranchRPGContract.balanceOf(store.address));
 };
 
 const onTask = (store: IStore) => (data: ITaskData) => {
@@ -120,8 +102,6 @@ export const store = reactive<IStore>({
       this.score = ethers.utils.formatEther(s);
       this.address = account.getSender();
       this.signer = signer;
-      // Get water balance
-      await updateWaterBalance(this);
 
       BranchRPGContract.on(BranchRPCBurnFilter, onScore(this));
       
@@ -158,7 +138,6 @@ export const store = reactive<IStore>({
             `https://mumbai.polygonscan.com/tx/${ev.transactionHash}`
           );
         }
-        await updateWaterBalance(this);
       } catch (error: any) {
         const data = error.body ? JSON.parse(error.body) : undefined;
         if (data?.error?.code == -32521) {
