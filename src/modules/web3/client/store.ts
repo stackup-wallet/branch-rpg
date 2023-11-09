@@ -19,23 +19,16 @@ interface ITaskData {
   action: "water" | "garden";
 }
 
+// 
+// >>>>>>> CONTRACT INTERFACE HERE <<<<<<<
+// 
 
-// Branch RPG contract
 const BranchRPGAddress = "0x20d8aE1faAFc55c8e2f1e86D02a62C79D9A43a73";
 const BranchRPGContract = new ethers.Contract(
   BranchRPGAddress,
   abi,
   new ethers.providers.JsonRpcProvider(process.env.NODE_RPC_URL)
 );
-const BranchRPCBurnFilter = BranchRPGContract.filters.Transfer(
-  null,
-  ethers.constants.AddressZero
-);
-
-const onScore = (store: IStore) => async () => {
-  store.score = ethers.utils.formatEther(await BranchRPGContract.score());
-  store.waterBalance = ethers.utils.formatEther(await BranchRPGContract.balanceOf(store.address));
-};
 
 const onTask = (store: IStore) => (data: ITaskData) => {
   switch (data.action) {
@@ -69,7 +62,12 @@ const onTask = (store: IStore) => (data: ITaskData) => {
   }
 };
 
-let account: Presets.Builder.Kernel;
+const onScore = (store: IStore) => async () => {
+  store.score = ethers.utils.formatEther(await BranchRPGContract.score());
+  store.waterBalance = ethers.utils.formatEther(await BranchRPGContract.balanceOf(store.address));
+};
+
+let userOpBuilder: Presets.Builder.Kernel;
 let client: IClient;
 export const store = reactive<IStore>({
   loading: false,
@@ -83,29 +81,38 @@ export const store = reactive<IStore>({
     try {
       this.loading = true;
 
+      // 
+      // >>>>>>> INITIALIZE USER OPERATION HERE <<<<<<<
+      // 
+
+      client = await Client.init(process.env.NODE_RPC_URL || "");
+
       const paymasterMiddleware = process.env.PAYMASTER_RPC_URL
         ? Presets.Middleware.verifyingPaymaster(process.env.PAYMASTER_RPC_URL, {
-            type: "payg",
-          })
+          type: "payg",
+        })
         : undefined;
-      const [a, c, s] = await Promise.all([
-        Presets.Builder.Kernel.init(
+
+        userOpBuilder = await Presets.Builder.Kernel.init(
           new ethers.Wallet(signer),
           process.env.NODE_RPC_URL || "",
           { paymasterMiddleware }
-        ),
-        Client.init(process.env.NODE_RPC_URL || ""),
-        BranchRPGContract.score(),
-      ]);
-      account = a;
-      client = c;
-      this.score = ethers.utils.formatEther(s);
-      this.address = account.getSender();
-      this.signer = signer;
+        );
 
-      BranchRPGContract.on(BranchRPCBurnFilter, onScore(this));
-      
-      socket.on("task", onTask(this));
+        const score = await BranchRPGContract.score();
+
+        this.score = ethers.utils.formatEther(score);
+        this.address = userOpBuilder.getSender();
+        this.signer = signer;
+        
+        const BranchRPCBurnFilter = BranchRPGContract.filters.Transfer(
+          null,
+          ethers.constants.AddressZero
+        );
+        BranchRPGContract.on(BranchRPCBurnFilter, onScore(this));
+        
+        socket.on("task", onTask(this));
+ 
     } catch (error) {
       console.error(error);
     } finally {
@@ -121,9 +128,14 @@ export const store = reactive<IStore>({
     } else {
       try {
         this.loading = true;
+
+        // 
+        // >>>>>>> EXECUTE USER OPERATION HERE <<<<<<<
+        // 
+
         console.log("Generating UserOperation...");
         const res = await client.sendUserOperation(
-          account.executeBatch(this.calls),
+          userOpBuilder.executeBatch(this.calls),
           {
             onBuild: (op) => console.log("Signed UserOperation:", op),
           }
@@ -138,6 +150,7 @@ export const store = reactive<IStore>({
             `https://mumbai.polygonscan.com/tx/${ev.transactionHash}`
           );
         }
+
       } catch (error: any) {
         const data = error.body ? JSON.parse(error.body) : undefined;
         if (data?.error?.code == -32521) {
