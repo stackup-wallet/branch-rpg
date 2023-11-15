@@ -16,7 +16,7 @@ interface IStore {
 }
 
 interface ITaskData {
-  action: "water" | "garden";
+  action: "water" | "garden" | "execute";
 }
 
 // 
@@ -54,6 +54,11 @@ const onTask = (store: IStore) => (data: ITaskData) => {
         ]),
       };
       store.calls = [...store.calls, call];
+      break;
+    }
+
+    case "execute": {
+      store.execute();
       break;
     }
 
